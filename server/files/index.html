@@ -7,6 +7,45 @@
     <title>Movies!</title>
     <style>
         /* Part 3: Your styling goes here */
+
+        /* General font for the whole page */
+        body {
+            font-family: 'Trebuchet MS', sans-serif;
+            padding: 20px;
+        }
+
+        /* The grey box for each individual movie */
+        article {
+            background-color: #d3d3d3; /* A nice light grey */
+            border-radius: 15px;       /* Rounded corners */
+            margin-bottom: 30px;       /* Space to the next movie */
+            padding: 20px;             /* Inner spacing */
+            max-width: 600px;          /* Prevent the box from getting too wide */
+        }
+
+        /* The movie poster */
+        img {
+            border-radius: 10px;       /* Rounded corners for the image */
+            max-width: 100%;           /* Adapts to the box width */
+        }
+
+        /* The movie title */
+        h2 {
+            font-weight: bold;
+            margin-top: 15px;
+            margin-bottom: 5px;
+        }
+
+
+        .genre {
+            background-color: #a9a9a9; /* Slightly darker grey for the buttons */
+            padding: 5px 10px;         /* Inner spacing to make them look like buttons */
+            border-radius: 5px;        /* Slightly rounded */
+            border: 1px solid black;   /* A thin black border */
+            display: inline-block;     /* Prevents layout issues */
+            margin-right: 8px;         /* Space to the next button */
+            margin-bottom: 15px;       /* Space below the button */
+        }
     </style>
     <script>
         function reverseString(s) {
@@ -18,8 +57,52 @@
             xhr.onload = function () {
                 const bodyElement = document.querySelector("body")
                 if (xhr.status == 200) {
-		            /* Part 2: Build the HTML elements here and append them to the body */ 
-                    bodyElement.append(reverseString(xhr.responseText))
+                    /* Part 2: Build the HTML elements here and append them to the body */
+                    const movies = JSON.parse(xhr.responseText)
+                    movies.forEach(function (movie) {
+                        const movieArticle = document.createElement("article");
+                        const posterElement = document.createElement("img");
+                        const titleElement = document.createElement("h2");
+                        const infoElement = document.createElement("p");
+                        const pilotElement = document.createElement("p");
+                        const authorElement= document.createElement("p");
+                        const teamElement = document.createElement("p");
+                        const ratingElement = document.createElement("p");
+
+
+                        movieArticle.append(posterElement);
+                        movieArticle.append(titleElement);
+                        movieArticle.append(infoElement);
+
+                        titleElement.textContent = movie.Title;
+                        posterElement.src = movie.Poster;
+                        posterElement.alt = "Poster for " + movie.Title;
+                        infoElement.textContent = "• Runtime: " + movie.Runtime + "m • Released on " + movie.Released;
+
+
+                        movie.Genres.forEach(function (genre) {
+                            const genreArticle = document.createElement("span");
+                            genreArticle.textContent = genre;
+                            genreArticle.className = "genre";
+                            movieArticle.append(genreArticle);
+                        })
+
+                        movieArticle.append(pilotElement);
+                        movieArticle.append(teamElement);
+                        movieArticle.append(ratingElement);
+
+                        pilotElement.textContent = movie.Plot;
+
+                        teamElement.innerHTML = "<strong>Directors:</strong> " + movie.Directors.join(', ') + "<br>" +
+                            "<strong>Writers:</strong> " + movie.Writers.join(', ') + "<br>" +
+                            "<strong>Actors:</strong> " + movie.Actors.join(', ');
+
+                        ratingElement.textContent = "IMDb Rating: " + movie.imdbRating + " | Metascore: " + movie.Metascore;
+
+
+                        bodyElement.append(movieArticle);
+
+                    })
                 } else {
                     bodyElement.append("Daten konnten nicht geladen werden, Status " + xhr.status + " - " + xhr.statusText)
                 }
